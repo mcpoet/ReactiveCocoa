@@ -62,6 +62,46 @@
 	return self;
 }
 
+- (instancetype)setNameWithComponents:(NSString *)firstComponent, ... {
+#ifdef DEBUG
+	va_list args;
+	NSUInteger totalLength = 0;
+
+	va_start(args, firstComponent);
+	for (NSString *current = firstComponent; current != nil; current = va_arg(args, NSString *)) {
+		NSCParameterAssert([current isKindOfClass:NSString.class]);
+
+		totalLength += current.length;
+	}
+
+	va_end(args);
+
+	if (totalLength == 0) {
+		self.name = nil;
+		return self;
+	}
+
+	unichar *bytes = malloc(totalLength * sizeof(unichar));
+	unichar *movingPtr = bytes;
+
+	va_start(args, firstComponent);
+	for (NSString *current = firstComponent; current != nil; current = va_arg(args, NSString *)) {
+		NSUInteger length = current.length;
+
+		[current getCharacters:movingPtr range:NSMakeRange(0, length)];
+		movingPtr += length;
+	}
+
+	va_end(args);
+
+	NSString *name = [[NSString alloc] initWithCharactersNoCopy:bytes length:totalLength freeWhenDone:YES];
+	if (name == nil) free(bytes);
+	self.name = name;
+#endif
+
+	return self;
+}
+
 @end
 
 @implementation RACStream (Operations)

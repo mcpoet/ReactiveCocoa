@@ -87,6 +87,15 @@ typedef RACStream * (^RACStreamBindBlock)(id value, BOOL *stop);
 // Returns the receiver, for easy method chaining.
 - (instancetype)setNameWithFormat:(NSString *)format, ... NS_FORMAT_FUNCTION(1, 2);
 
+// Sets the name of the receiver to the given strings, concatenated. This method
+// will generally be faster than -setNameWithFormat:.
+//
+// This is for debugging purposes only, and won't do anything unless the DEBUG
+// preprocessor macro is defined.
+//
+// Returns the receiver, for easy method chaining.
+- (instancetype)setNameWithComponents:(NSString *)firstComponent, ... NS_REQUIRES_NIL_TERMINATION;
+
 @end
 
 // Operations built on the RACStream primitives.
